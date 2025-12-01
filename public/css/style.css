@@ -148,7 +148,7 @@ body.dark-mode hr {
     transform: rotate(20deg);
 }
 
-body.dark-mode #darkModeToggle {
+body.dark-mode .darkModeToggle {
     background-color: #ffc107;
     border-color: #ffc107;
     color: #1a1a2e;

@@ -1,6 +1,47 @@
 (function ($) {
     "use strict";
 
+    // Dark mode toggle handling
+    var themeStorage = {
+        get: function (key) {
+            try {
+                return localStorage.getItem(key);
+            } catch (error) {
+                return null;
+            }
+        },
+        set: function (key, value) {
+            try {
+                localStorage.setItem(key, value);
+            } catch (error) {
+                // ignore storage errors (e.g., private mode)
+            }
+        }
+    };
+
+    var applyDarkMode = function (isDark) {
+        $('body').toggleClass('dark-mode', isDark);
+        $('.darkModeIcon').each(function () {
+            $(this)
+                .toggleClass('fa-sun', isDark)
+                .toggleClass('fa-moon', !isDark);
+        });
+    };
+
+    var savedTheme = themeStorage.get('theme');
+    if (savedTheme === 'dark') {
+        applyDarkMode(true);
+    } else if (savedTheme === 'light') {
+        applyDarkMode(false);
+    }
+
+    $(document).on('click', '.darkModeToggle', function (event) {
+        event.preventDefault();
+        var willEnableDark = !$('body').hasClass('dark-mode');
+        applyDarkMode(willEnableDark);
+        themeStorage.set('theme', willEnableDark ? 'dark' : 'light');
+    });
+
     // Spinner
     var spinner = function () {
         setTimeout(function () {
@@ -13,7 +54,13 @@
     
     
     // Initiate the wowjs
-    new WOW().init();
+    try {
+        if (typeof WOW !== 'undefined') {
+            new WOW().init();
+        }
+    } catch (e) {
+        console.warn('WOW.js initialization failed:', e);
+    }
 
     // Sticky Navbar
     $(window).scroll(function () {
@@ -26,6 +73,7 @@
 
 
     // Hero Header carousel
+    if ($.fn.owlCarousel) {
     $(".header-carousel").owlCarousel({
         animateOut: 'fadeOut',
         items: 1,
@@ -76,8 +124,11 @@
         }
     });
 
+    }
+
 
     // testimonial carousel
+    if ($.fn.owlCarousel) {
     $(".testimonial-carousel").owlCarousel({
         autoplay: true,
         smartSpeed: 1500,
@@ -109,13 +160,16 @@
             }
         }
     });
+    }
 
 
     // Facts counter
-    $('[data-toggle="counter-up"]').counterUp({
-        delay: 5,
-        time: 2000
-    });
+    if ($.fn.counterUp) {
+        $('[data-toggle="counter-up"]').counterUp({
+            delay: 5,
+            time: 2000
+        });
+    }
 
 
    // Back to top button
@@ -130,6 +184,7 @@
         $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
         return false;
     });
+
 
 
 })(jQuery);

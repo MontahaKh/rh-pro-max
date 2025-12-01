@@ -32,6 +32,17 @@
     </head>
 
     <body>
+        <!-- Apply dark mode immediately to prevent flash -->
+        <script>
+            (function() {
+                try {
+                    if (localStorage.getItem('theme') === 'dark') {
+                        document.body.classList.add('dark-mode');
+                    }
+                } catch(e) {}
+            })();
+        </script>
+
         <!-- Spinner Start -->
         <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
             <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
@@ -278,65 +289,6 @@
 
         <!-- Template Javascript -->
         <script src="{{ asset('js/main.js') }}"></script>
-
-        <!-- Dark Mode Toggle Script -->
-        <script>
-            (function() {
-                // Helper to safely get/set localStorage
-                var storage = {
-                    get: function(key) {
-                        try { return localStorage.getItem(key); } catch(e) { return null; }
-                    },
-                    set: function(key, val) {
-                        try { localStorage.setItem(key, val); } catch(e) {}
-                    }
-                };
-
-                function updateIcons(isDark) {
-                    var icons = document.querySelectorAll('.darkModeIcon');
-                    icons.forEach(function(icon) {
-                        if (isDark) {
-                            icon.classList.remove('fa-moon');
-                            icon.classList.add('fa-sun');
-                        } else {
-                            icon.classList.remove('fa-sun');
-                            icon.classList.add('fa-moon');
-                        }
-                    });
-                }
-
-                function initTheme() {
-                    var savedTheme = storage.get('theme');
-                    var body = document.body;
-                    if (savedTheme === 'dark') {
-                        body.classList.add('dark-mode');
-                        // We might need to wait for DOM to find icons if this runs too early
-                        if (document.readyState === 'loading') {
-                            document.addEventListener('DOMContentLoaded', function() { updateIcons(true); });
-                        } else {
-                            updateIcons(true);
-                        }
-                    }
-                }
-
-                // Initialize theme
-                initTheme();
-
-                // Event delegation for toggles
-                document.addEventListener('click', function(e) {
-                    var toggle = e.target.closest('.darkModeToggle');
-                    if (toggle) {
-                        e.preventDefault();
-                        var body = document.body;
-                        body.classList.toggle('dark-mode');
-                        var isDark = body.classList.contains('dark-mode');
-                        
-                        updateIcons(isDark);
-                        storage.set('theme', isDark ? 'dark' : 'light');
-                    }
-                });
-            })();
-        </script>
 
         {% block javascripts %}{% endblock %}
     </body>
