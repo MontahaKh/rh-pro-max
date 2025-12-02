@@ -6,7 +6,7 @@
 <!-- Header Start -->
 <div class="container-fluid bg-breadcrumb">
     <div class="container text-center py-5" style="max-width: 900px;">
-        <h4 class="text-white display-4 mb-4 wow fadeInDown" data-wow-delay="0.1s">Visitor Registration</h4>
+        <h4 class="text-white display-4 mb-4 wow fadeInDown" data-wow-delay="0.1s">Candidate Registration</h4>
         <ol class="breadcrumb d-flex justify-content-center mb-0 wow fadeInDown" data-wow-delay="0.3s">
             <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Home</a></li>
             <li class="breadcrumb-item active text-primary">Register</li>
@@ -23,18 +23,18 @@
             <div class="col-lg-6">
                 <div class="card shadow-sm">
                     <div class="card-header bg-primary text-white text-center">
-                        <h4 class="mb-0"><i class="fas fa-user-plus me-2"></i>Create Visitor Account</h4>
+                        <h4 class="mb-0"><i class="fas fa-user-plus me-2"></i>Create Candidate Account</h4>
                     </div>
                     <div class="card-body p-4">
                         <div class="alert alert-info mb-4">
                             <i class="fas fa-info-circle me-2"></i>
-                            <strong>Note:</strong> This registration is for visitors only. 
+                            <strong>Note:</strong> This registration is for candidates only.
                             Employee accounts are created by HR administrators.
                         </div>
 
                         {{ form_start(registrationForm, {'attr': {'novalidate': 'novalidate'}}) }}
                             {{ form_errors(registrationForm) }}
-                            
+
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="{{ registrationForm.firstName.vars.id }}" class="form-label">
@@ -87,7 +87,7 @@
                             <div class="mb-3 form-check">
                                 {{ form_widget(registrationForm.agreeTerms, {'attr': {'class': 'form-check-input'}}) }}
                                 <label class="form-check-label" for="{{ registrationForm.agreeTerms.vars.id }}">
-                                    I agree to the <a href="#" class="text-primary">Terms of Service</a> and 
+                                    I agree to the <a href="#" class="text-primary">Terms of Service</a> and
                                     <a href="#" class="text-primary">Privacy Policy</a>
                                 </label>
                                 {{ form_errors(registrationForm.agreeTerms) }}
@@ -95,7 +95,7 @@
 
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-primary rounded-pill py-2">
-                                    <i class="fas fa-user-plus me-2"></i>Create Visitor Account
+                                    <i class="fas fa-user-plus me-2"></i>Create Candidate Account
                                 </button>
                             </div>
                         {{ form_end(registrationForm) }}
@@ -103,7 +103,7 @@
                         <hr class="my-4">
 
                         <div class="text-center">
-                            <p class="mb-0">Already have an account? 
+                            <p class="mb-0">Already have an account?
                                 <a href="{{ path('app_login') }}" class="text-primary fw-bold">Sign in here</a>
                             </p>
                         </div>

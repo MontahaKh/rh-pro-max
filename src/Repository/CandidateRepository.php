@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\Visitor;
+use App\Entity\Candidate;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
@@ -10,13 +10,13 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 
 /**
- * @extends ServiceEntityRepository<Visitor>
+ * @extends ServiceEntityRepository<Candidate>
  */
-class VisitorRepository extends ServiceEntityRepository implements PasswordUpgraderInterface
+class CandidateRepository extends ServiceEntityRepository implements PasswordUpgraderInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Visitor::class);
+        parent::__construct($registry, Candidate::class);
     }
 
     /**
@@ -24,7 +24,7 @@ class VisitorRepository extends ServiceEntityRepository implements PasswordUpgra
      */
     public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void
     {
-        if (!$user instanceof Visitor) {
+        if (!$user instanceof Candidate) {
             throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', $user::class));
         }
 

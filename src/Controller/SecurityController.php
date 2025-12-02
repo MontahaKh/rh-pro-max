@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\Visitor;
-use App\Form\VisitorRegistrationFormType;
+use App\Entity\Candidate;
+use App\Form\CandidateRegistrationFormType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -52,25 +52,25 @@ class SecurityController extends AbstractController
             return $this->redirectToRoute('app_home');
         }
 
-        $visitor = new Visitor();
-        $form = $this->createForm(VisitorRegistrationFormType::class, $visitor);
+        $candidate = new Candidate();
+        $form = $this->createForm(CandidateRegistrationFormType::class, $candidate);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
                 try {
                     // Hash the password
-                    $visitor->setPassword(
+                    $candidate->setPassword(
                         $userPasswordHasher->hashPassword(
-                            $visitor,
+                            $candidate,
                             $form->get('plainPassword')->getData()
                         )
                     );
 
-                    $entityManager->persist($visitor);
+                    $entityManager->persist($candidate);
                     $entityManager->flush();
 
-                    $this->addFlash('success', 'Your visitor account has been created successfully! You can now log in.');
+                    $this->addFlash('success', 'Your candidate account has been created successfully! You can now log in.');
 
                     return $this->redirectToRoute('app_login');
                 } catch (\Exception $e) {

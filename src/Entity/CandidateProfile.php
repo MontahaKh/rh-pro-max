@@ -43,7 +43,7 @@ class CandidateProfile
     private ?User $internalApplicant = null;
 
     #[ORM\ManyToOne(inversedBy: 'candidateProfiles')]
-    private ?Visitor $visitor = null;
+    private ?Candidate $candidate = null;
 
     public function __construct()
     {
@@ -189,14 +189,14 @@ class CandidateProfile
         return $this;
     }
 
-    public function getVisitor(): ?Visitor
+    public function getCandidate(): ?Candidate
     {
-        return $this->visitor;
+        return $this->candidate;
     }
 
-    public function setVisitor(?Visitor $visitor): static
+    public function setCandidate(?Candidate $candidate): static
     {
-        $this->visitor = $visitor;
+        $this->candidate = $candidate;
 
         return $this;
     }

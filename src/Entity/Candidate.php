@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use App\Repository\VisitorRepository;
+use App\Repository\CandidateRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -11,11 +11,11 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-#[ORM\Entity(repositoryClass: VisitorRepository::class)]
-#[ORM\Table(name: 'visitor')]
-#[ORM\UniqueConstraint(name: 'UNIQ_VISITOR_EMAIL', fields: ['email'])]
+#[ORM\Entity(repositoryClass: CandidateRepository::class)]
+#[ORM\Table(name: 'candidate')]
+#[ORM\UniqueConstraint(name: 'UNIQ_CANDIDATE_EMAIL', fields: ['email'])]
 #[UniqueEntity(fields: ['email'], message: 'This email is already registered.')]
-class Visitor implements UserInterface, PasswordAuthenticatedUserInterface
+class Candidate implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -46,7 +46,7 @@ class Visitor implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private bool $isActive = true;
 
-    #[ORM\OneToMany(mappedBy: 'visitor', targetEntity: CandidateProfile::class)]
+    #[ORM\OneToMany(mappedBy: 'candidate', targetEntity: CandidateProfile::class)]
     private Collection $candidateProfiles;
 
     public function __construct()
@@ -122,8 +122,8 @@ class Visitor implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getRoles(): array
     {
-        // Visitors always have ROLE_VISITOR only
-        return ['ROLE_VISITOR'];
+        // Candidates always have ROLE_CANDIDATE only
+        return ['ROLE_CANDIDATE'];
     }
 
     /**
@@ -193,7 +193,7 @@ class Visitor implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->candidateProfiles->contains($candidateProfile)) {
             $this->candidateProfiles->add($candidateProfile);
-            $candidateProfile->setVisitor($this);
+            $candidateProfile->setCandidate($this);
         }
         return $this;
     }
@@ -201,8 +201,8 @@ class Visitor implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeCandidateProfile(CandidateProfile $candidateProfile): static
     {
         if ($this->candidateProfiles->removeElement($candidateProfile)) {
-            if ($candidateProfile->getVisitor() === $this) {
-                $candidateProfile->setVisitor(null);
+            if ($candidateProfile->getCandidate() === $this) {
+                $candidateProfile->setCandidate(null);
             }
         }
         return $this;

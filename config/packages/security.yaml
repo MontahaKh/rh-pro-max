@@ -9,18 +9,18 @@ security:
             entity:
                 class: App\Entity\User
                 property: email
-        # Visitors (separate table)
-        app_visitor_provider:
+        # Candidates (separate table)
+        app_candidate_provider:
             entity:
-                class: App\Entity\Visitor
+                class: App\Entity\Candidate
                 property: email
         # Chain provider to check both
         all_users:
             chain:
-                providers: ['app_user_provider', 'app_visitor_provider']
-    
+                providers: ['app_user_provider', 'app_candidate_provider']
+
     # Role hierarchy - Admin has all permissions, HR_MANAGER can manage employees
-    # VISITOR has no inherited roles - very limited access
+    # CANDIDATE has no inherited roles - very limited access
     role_hierarchy:
         ROLE_ADMIN: [ROLE_HR_MANAGER, ROLE_TEAM_MANAGER, ROLE_RECRUITER, ROLE_EMPLOYEE]
         ROLE_HR_MANAGER: [ROLE_EMPLOYEE]
@@ -35,7 +35,7 @@ security:
         main:
             lazy: true
             provider: all_users
-            
+
             form_login:
                 login_path: app_login
                 check_path: app_login
@@ -43,11 +43,11 @@ security:
                 enable_csrf: true
                 username_parameter: email
                 password_parameter: password
-            
+
             logout:
                 path: app_logout
                 target: app_home
-            
+
             remember_me:
                 secret: '%kernel.secret%'
                 lifetime: 604800
@@ -64,21 +64,21 @@ security:
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }
         - { path: ^/logout, roles: PUBLIC_ACCESS }
-        
-        # Job offers - visitors can view and apply
+
+        # Job offers - candidates can view and apply
         - { path: ^/job-offer/new, roles: ROLE_HR_MANAGER }
         - { path: ^/job-offer/\d+/edit, roles: ROLE_HR_MANAGER }
-        - { path: ^/job-offer/\d+/apply, roles: ROLE_VISITOR }
+        - { path: ^/job-offer/\d+/apply, roles: ROLE_CANDIDATE }
         - { path: ^/job-offer, roles: PUBLIC_ACCESS }
-        
+
         # Employee management - HR only
         - { path: ^/user/new, roles: ROLE_HR_MANAGER }
         - { path: ^/user/\d+/edit, roles: ROLE_EMPLOYEE }
         - { path: ^/user, roles: ROLE_EMPLOYEE }
-        
+
         # Candidate profiles - HR and Recruiters
         - { path: ^/candidate-profile, roles: ROLE_RECRUITER }
-        
+
         # Skills - Employees and above
         - { path: ^/skill-category, roles: ROLE_HR_MANAGER }
         - { path: ^/skill, roles: ROLE_EMPLOYEE }

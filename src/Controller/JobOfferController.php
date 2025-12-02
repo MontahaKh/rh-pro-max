@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\CandidateProfile;
 use App\Entity\JobOffer;
-use App\Entity\Visitor;
+use App\Entity\Candidate;
 use App\Enum\CandidateStatus;
 use App\Form\JobOfferType;
 use App\Repository\CandidateProfileRepository;
@@ -19,7 +19,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/job-offer')]
 class JobOfferController extends AbstractController
 {
-    // Public access - anyone can view job offers (including visitors)
+    // Public access - anyone can view job offers (including candidates)
     #[Route('/', name: 'app_job_offer_index', methods: ['GET'])]
     public function index(JobOfferRepository $jobOfferRepository): Response
     {
@@ -59,64 +59,64 @@ class JobOfferController extends AbstractController
     {
         $hasApplied = false;
         $user = $this->getUser();
-        
-        if ($user instanceof Visitor) {
+
+        if ($user instanceof Candidate) {
             $existingApplication = $candidateProfileRepository->findOneBy([
-                'visitor' => $user,
+                'candidate' => $user,
                 'jobOffer' => $jobOffer
             ]);
             $hasApplied = $existingApplication !== null;
         }
-        
+
         return $this->render('job_offer/show.html.twig', [
             'job_offer' => $jobOffer,
             'has_applied' => $hasApplied,
         ]);
     }
 
-    // Apply to a job offer (for logged in visitors)
+    // Apply to a job offer (for logged in candidates)
     #[Route('/{id}/apply', name: 'app_job_offer_apply', methods: ['POST'])]
-    #[IsGranted('ROLE_VISITOR')]
+    #[IsGranted('ROLE_CANDIDATE')]
     public function apply(Request $request, JobOffer $jobOffer, EntityManagerInterface $entityManager, CandidateProfileRepository $candidateProfileRepository): Response
     {
-        $visitor = $this->getUser();
-        
-        // Ensure the user is a Visitor
-        if (!$visitor instanceof Visitor) {
-            $this->addFlash('danger', 'Only visitors can apply for job offers.');
+        $candidate = $this->getUser();
+
+        // Ensure the user is a Candidate
+        if (!$candidate instanceof Candidate) {
+            $this->addFlash('danger', 'Only candidates can apply for job offers.');
             return $this->redirectToRoute('app_job_offer_show', ['id' => $jobOffer->getId()]);
         }
-        
+
         // Check if already applied
         $existingApplication = $candidateProfileRepository->findOneBy([
-            'visitor' => $visitor,
+            'candidate' => $candidate,
             'jobOffer' => $jobOffer
         ]);
-        
+
         if ($existingApplication) {
             $this->addFlash('warning', 'You have already applied for this job offer.');
             return $this->redirectToRoute('app_job_offer_show', ['id' => $jobOffer->getId()]);
         }
-        
+
         // Validate CSRF token
         if (!$this->isCsrfTokenValid('apply'.$jobOffer->getId(), $request->getPayload()->getString('_token'))) {
             $this->addFlash('danger', 'Invalid security token. Please try again.');
             return $this->redirectToRoute('app_job_offer_show', ['id' => $jobOffer->getId()]);
         }
-        
+
         // Create candidate profile
         $candidateProfile = new CandidateProfile();
-        $candidateProfile->setFullName($visitor->getFullName());
-        $candidateProfile->setEmail($visitor->getEmail());
+        $candidateProfile->setFullName($candidate->getFullName());
+        $candidateProfile->setEmail($candidate->getEmail());
         $candidateProfile->setJobOffer($jobOffer);
-        $candidateProfile->setVisitor($visitor);
+        $candidateProfile->setCandidate($candidate);
         $candidateProfile->setStatus(CandidateStatus::NEW);
-        
+
         $entityManager->persist($candidateProfile);
         $entityManager->flush();
-        
+
         $this->addFlash('success', 'Your application has been submitted successfully!');
-        
+
         return $this->redirectToRoute('app_job_offer_show', ['id' => $jobOffer->getId()]);
     }
 
