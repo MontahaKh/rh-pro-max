@@ -81,8 +81,8 @@ security:
         - { path: ^/user/\d+/edit, roles: ROLE_EMPLOYEE }
         - { path: ^/user, roles: ROLE_EMPLOYEE }
 
-        # Candidate profiles - HR and Recruiters
-        - { path: ^/candidate-profile, roles: ROLE_RECRUITER }
+        # Candidate profiles - HR and Recruiters only (not candidates themselves)
+        - { path: ^/candidate/profile, roles: ROLE_RECRUITER }
 
         # Skills - Employees and above
         - { path: ^/skill-category, roles: ROLE_HR_MANAGER }
