@@ -1,4 +1,7 @@
 # RH Pro Max
+## Authors
+- Houssem Amor (initial project)
+- Montaha Khedhiri (development & improvements)
 
 A comprehensive Human Resources Management System built with Symfony 7.
 
@@ -38,7 +41,7 @@ A comprehensive Human Resources Management System built with Symfony 7.
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/Houssemamor/RH_Pro_Max.git
+   git clone https://github.com/MontahaKh/RH_Pro_Max.git
    cd RH_Pro_Max
    ```
 
