@@ -3,153 +3,188 @@
 {% block title %}{{ candidate_profile.fullName }} - Candidate - RH Pro Max{% endblock %}
 
 {% block header %}
-<!-- Header Start -->
-<div class="container-fluid bg-breadcrumb">
-    <div class="container text-center py-5" style="max-width: 900px;">
-        <h4 class="text-white display-4 mb-4 wow fadeInDown" data-wow-delay="0.1s">Candidate Details</h4>
-        <ol class="breadcrumb d-flex justify-content-center mb-0 wow fadeInDown" data-wow-delay="0.3s">
-            <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Home</a></li>
-            <li class="breadcrumb-item"><a href="{{ path('app_candidate_profile_index') }}">Candidates</a></li>
-            <li class="breadcrumb-item active text-primary">{{ candidate_profile.fullName }}</li>
-        </ol>
+    <!-- Header Start -->
+    <div class="container-fluid bg-breadcrumb">
+        <div class="container text-center py-5" style="max-width: 900px;">
+            <h4 class="text-white display-4 mb-4 wow fadeInDown" data-wow-delay="0.1s">
+                Candidate Details
+            </h4>
+            <ol class="breadcrumb d-flex justify-content-center mb-0 wow fadeInDown" data-wow-delay="0.3s">
+                <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Home</a></li>
+                <li class="breadcrumb-item">
+                    <a href="{{ path('app_candidate_profile_index') }}">Candidates</a>
+                </li>
+                <li class="breadcrumb-item active text-primary">{{ candidate_profile.fullName }}</li>
+            </ol>
+        </div>
     </div>
-</div>
-<!-- Header End -->
+    <!-- Header End -->
 {% endblock %}
 
 {% block body %}
-<div class="container-fluid py-5">
-    <div class="container py-5">
-        <div class="row">
-            <div class="col-lg-8">
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0"><i class="fas fa-user-tie me-2"></i>{{ candidate_profile.fullName }}</h5>
-                    </div>
-                    <div class="card-body">
-                        <table class="table table-borderless">
-                            <tr>
-                                <th class="text-muted" style="width: 30%">ID</th>
-                                <td>{{ candidate_profile.id }}</td>
-                            </tr>
-                            <tr>
-                                <th class="text-muted">Full Name</th>
-                                <td><strong>{{ candidate_profile.fullName }}</strong></td>
-                            </tr>
-                            <tr>
-                                <th class="text-muted">Email</th>
-                                <td><a href="mailto:{{ candidate_profile.email }}"><i class="fas fa-envelope me-1"></i>{{ candidate_profile.email }}</a></td>
-                            </tr>
-                            <tr>
-                                <th class="text-muted">Status</th>
-                                <td>
-                                    {% if candidate_profile.status %}
-                                        {% set statusClass = {
-                                            'NEW': 'primary',
-                                            'SCREENING': 'info',
-                                            'INTERVIEW': 'warning',
-                                            'OFFER': 'success',
-                                            'HIRED': 'success',
-                                            'REJECTED': 'danger'
-                                        } %}
-                                        <span class="badge bg-{{ statusClass[candidate_profile.status.value] ?? 'secondary' }}">
+    <div class="container-fluid py-5">
+        <div class="container py-5">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-user-tie me-2"></i>{{ candidate_profile.fullName }}
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th class="text-muted" style="width: 30%">ID</th>
+                                    <td>{{ candidate_profile.id }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">Full Name</th>
+                                    <td><strong>{{ candidate_profile.fullName }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">Email</th>
+                                    <td>
+                                        <a href="mailto:{{ candidate_profile.email }}">
+                                            <i class="fas fa-envelope me-1"></i>{{ candidate_profile.email }}
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">Status</th>
+                                    <td>
+                                        {% if candidate_profile.status %}
+                                            {% set statusClass = {
+                                                'NEW': 'primary',
+                                                'SCREENED': 'info',
+                                                'INTERVIEW': 'warning',
+                                                'HIRED': 'success',
+                                                'REJECTED': 'danger'
+                                            } %}
+                                            <span class="badge bg-{{ statusClass[candidate_profile.status.value] ?? 'secondary' }}">
                                             {{ candidate_profile.status.value }}
                                         </span>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            <tr>
-                                <th class="text-muted">Applied For</th>
-                                <td>
-                                    {% if candidate_profile.jobOffer %}
-                                        <a href="{{ path('app_job_offer_show', {'id': candidate_profile.jobOffer.id}) }}">
-                                            <i class="fas fa-briefcase me-1"></i>{{ candidate_profile.jobOffer.title }}
-                                        </a>
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            <tr>
-                                <th class="text-muted">Applied On</th>
-                                <td>{{ candidate_profile.createdAt ? candidate_profile.createdAt|date('M d, Y \a\t H:i') : '-' }}</td>
-                            </tr>
-                        </table>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">Applied For</th>
+                                    <td>
+                                        {% if candidate_profile.jobOffer %}
+                                            <a href="{{ path('app_job_offer_show', {'id': candidate_profile.jobOffer.id}) }}">
+                                                <i class="fas fa-briefcase me-1"></i>{{ candidate_profile.jobOffer.title }}
+                                            </a>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">Applied On</th>
+                                    <td>
+                                        {{ candidate_profile.createdAt ? candidate_profile.createdAt|date('M d, Y \\a\\t H:i') : '-' }}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
                     </div>
-                </div>
 
-                <!-- CV Documents Section -->
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-light">
-                        <h5 class="mb-0"><i class="fas fa-file-alt me-2"></i>CV Documents ({{ candidate_profile.cvs|length }})</h5>
-                    </div>
-                    <div class="card-body">
-                        {% if candidate_profile.cvs|length > 0 %}
-                            <div class="list-group">
-                                {% for cv in candidate_profile.cvs %}
-                                    <div class="list-group-item d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <i class="fas fa-file-pdf text-danger me-2"></i>
-                                            <strong>{{ cv.filePath }}</strong>
-                                            <br>
-                                            <small class="text-muted">
-                                                <i class="fas fa-clock me-1"></i>Uploaded: {{ cv.uploadedAt|date('M d, Y \\a\\t H:i') }}
-                                                {% if cv.parsedAt %}
-                                                    | <i class="fas fa-check-circle text-success me-1"></i>Parsed: {{ cv.parsedAt|date('M d, Y \\a\\t H:i') }}
-                                                {% endif %}
-                                            </small>
+                    <!-- CV Documents Section -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">
+                                <i class="fas fa-file-alt me-2"></i>
+                                CV Documents ({{ candidate_profile.cvs|length }})
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            {% if candidate_profile.cvs|length > 0 %}
+                                <div class="list-group">
+                                    {% for cv in candidate_profile.cvs %}
+                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <i class="fas fa-file-pdf text-danger me-2"></i>
+                                                <strong>{{ cv.filePath }}</strong><br>
+                                                <small class="text-muted">
+                                                    <i class="fas fa-clock me-1"></i>
+                                                    Uploaded: {{ cv.uploadedAt|date('M d, Y \\a\\t H:i') }}
+                                                    {% if cv.parsedAt %}
+                                                        | <i class="fas fa-check-circle text-success me-1"></i>
+                                                        Parsed: {{ cv.parsedAt|date('M d, Y \\a\\t H:i') }}
+                                                    {% endif %}
+                                                </small>
+                                            </div>
+                                            <a href="{{ asset('uploads/cvs/' ~ cv.filePath) }}"
+                                               class="btn btn-sm btn-primary rounded-pill"
+                                               target="_blank">
+                                                <i class="fas fa-download me-1"></i>Download
+                                            </a>
                                         </div>
-                                        <a href="{{ asset('uploads/cvs/' ~ cv.filePath) }}" class="btn btn-sm btn-primary rounded-pill" target="_blank">
-                                            <i class="fas fa-download me-1"></i>Download
-                                        </a>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        {% else %}
-                            <div class="text-center py-4">
-                                <i class="fas fa-file-upload fa-3x text-muted mb-3"></i>
-                                <p class="text-muted">No CV documents uploaded yet.</p>
-                            </div>
-                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="text-center py-4">
+                                    <i class="fas fa-file-upload fa-3x text-muted mb-3"></i>
+                                    <p class="text-muted">No CV documents uploaded yet.</p>
+                                </div>
+                            {% endif %}
+                        </div>
                     </div>
+
+                    <!-- Skills Section -->
+                    {% if candidate_profile.skills|length > 0 %}
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-star me-2"></i>Skills
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex flex-wrap gap-2">
+                                    {% for skill in candidate_profile.skills %}
+                                        <span class="badge bg-info fs-6">{{ skill.skill.name }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
                 </div>
 
-                <!-- Skills Section -->
-                {% if candidate_profile.skills|length > 0 %}
-                <div class="card shadow-sm">
-                    <div class="card-header bg-light">
-                        <h5 class="mb-0"><i class="fas fa-star me-2"></i>Skills</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-flex flex-wrap gap-2">
-                            {% for skill in candidate_profile.skills %}
-                                <span class="badge bg-info fs-6">{{ skill.skill.name }}</span>
-                            {% endfor %}
+                <div class="col-lg-4">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">
+                                <i class="fas fa-cog me-2"></i>Actions
+                            </h6>
                         </div>
-                    </div>
-                </div>
-                {% endif %}
-            </div>
-            <div class="col-lg-4">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-light">
-                        <h6 class="mb-0"><i class="fas fa-cog me-2"></i>Actions</h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-grid gap-2">
-                            <a href="{{ path('app_candidate_profile_edit', {'id': candidate_profile.id}) }}" class="btn btn-warning rounded-pill">
-                                <i class="fas fa-edit me-2"></i>Edit Candidate
-                            </a>
-                            <a href="{{ path('app_candidate_profile_index') }}" class="btn btn-outline-primary rounded-pill">
-                                <i class="fas fa-arrow-left me-2"></i>Back to List
-                            </a>
+                        <div class="card-body">
+                            <div class="d-grid gap-2 mb-3">
+                                {% if is_granted('ROLE_RECRUITER') %}
+                                    <a href="{{ path('app_candidate_profile_manage', {'id': candidate_profile.id}) }}"
+                                       class="btn btn-success rounded-pill">
+                                        <i class="fas fa-envelope-open-text me-2"></i>
+                                        Manage application / Send email
+                                    </a>
+                                {% endif %}
+
+                                <a href="{{ path('app_candidate_profile_edit', {'id': candidate_profile.id}) }}"
+                                   class="btn btn-warning rounded-pill">
+                                    <i class="fas fa-edit me-2"></i>Edit Candidate
+                                </a>
+
+                                <a href="{{ path('app_candidate_profile_index') }}"
+                                   class="btn btn-outline-primary rounded-pill">
+                                    <i class="fas fa-arrow-left me-2"></i>Back to List
+                                </a>
+                            </div>
+
+                            <hr>
+
+                            {{ include('candidate_profile/_delete_form.html.twig') }}
                         </div>
-                        <hr>
-                        {{ include('candidate_profile/_delete_form.html.twig') }}
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 {% endblock %}

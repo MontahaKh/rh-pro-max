@@ -3,32 +3,34 @@
 {% block title %}Candidates - RH Pro Max{% endblock %}
 
 {% block header %}
-<!-- Header Start -->
-<div class="container-fluid bg-breadcrumb">
-    <div class="container text-center py-5" style="max-width: 900px;">
-        <h4 class="text-white display-4 mb-4 wow fadeInDown" data-wow-delay="0.1s">Candidates</h4>
-        <ol class="breadcrumb d-flex justify-content-center mb-0 wow fadeInDown" data-wow-delay="0.3s">
-            <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Home</a></li>
-            <li class="breadcrumb-item active text-primary">Candidates</li>
-        </ol>
+    <!-- Header Start -->
+    <div class="container-fluid bg-breadcrumb">
+        <div class="container text-center py-5" style="max-width: 900px;">
+            <h4 class="text-white display-4 mb-4 wow fadeInDown" data-wow-delay="0.1s">Candidates</h4>
+            <ol class="breadcrumb d-flex justify-content-center mb-0 wow fadeInDown" data-wow-delay="0.3s">
+                <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Home</a></li>
+                <li class="breadcrumb-item active text-primary">Candidates</li>
+            </ol>
+        </div>
     </div>
-</div>
-<!-- Header End -->
+    <!-- Header End -->
 {% endblock %}
 
 {% block body %}
-<div class="container-fluid py-5">
-    <div class="container py-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="text-primary"><i class="fas fa-user-tie me-2"></i>Candidates</h2>
-            <a href="{{ path('app_candidate_profile_new') }}" class="btn btn-primary rounded-pill px-4">
-                <i class="fas fa-plus me-2"></i>Add New Candidate
-            </a>
-        </div>
-        
-        <div class="table-responsive bg-white rounded shadow-sm">
-            <table class="table table-hover mb-0">
-                <thead class="table-primary">
+    <div class="container-fluid py-5">
+        <div class="container py-5">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="text-primary">
+                    <i class="fas fa-user-tie me-2"></i>Candidates
+                </h2>
+                <a href="{{ path('app_candidate_profile_new') }}" class="btn btn-primary rounded-pill px-4">
+                    <i class="fas fa-plus me-2"></i>Add New Candidate
+                </a>
+            </div>
+
+            <div class="table-responsive bg-white rounded shadow-sm">
+                <table class="table table-hover mb-0">
+                    <thead class="table-primary">
                     <tr>
                         <th>ID</th>
                         <th>Full Name</th>
@@ -37,49 +39,63 @@
                         <th>Applied On</th>
                         <th class="text-center">Actions</th>
                     </tr>
-                </thead>
-                <tbody>
-                {% for candidate_profile in candidate_profiles %}
-                    <tr>
-                        <td>{{ candidate_profile.id }}</td>
-                        <td><strong>{{ candidate_profile.fullName }}</strong></td>
-                        <td><i class="fas fa-envelope text-muted me-1"></i>{{ candidate_profile.email }}</td>
-                        <td>
-                            {% if candidate_profile.status %}
-                                {% set statusClass = {
-                                    'NEW': 'primary',
-                                    'SCREENING': 'info',
-                                    'INTERVIEW': 'warning',
-                                    'OFFER': 'success',
-                                    'HIRED': 'success',
-                                    'REJECTED': 'danger'
-                                } %}
-                                <span class="badge bg-{{ statusClass[candidate_profile.status.value] ?? 'secondary' }}">
+                    </thead>
+                    <tbody>
+                    {% for candidate_profile in candidate_profiles %}
+                        <tr>
+                            <td>{{ candidate_profile.id }}</td>
+                            <td><strong>{{ candidate_profile.fullName }}</strong></td>
+                            <td>
+                                <i class="fas fa-envelope text-muted me-1"></i>
+                                {{ candidate_profile.email }}
+                            </td>
+                            <td>
+                                {% if candidate_profile.status %}
+                                    {% set statusClass = {
+                                        'NEW': 'primary',
+                                        'SCREENED': 'info',
+                                        'INTERVIEW': 'warning',
+                                        'HIRED': 'success',
+                                        'REJECTED': 'danger'
+                                    } %}
+                                    <span class="badge bg-{{ statusClass[candidate_profile.status.value] ?? 'secondary' }}">
                                     {{ candidate_profile.status.value }}
                                 </span>
-                            {% endif %}
-                        </td>
-                        <td>{{ candidate_profile.createdAt ? candidate_profile.createdAt|date('M d, Y') : '-' }}</td>
-                        <td class="text-center">
-                            <a href="{{ path('app_candidate_profile_show', {'id': candidate_profile.id}) }}" class="btn btn-sm btn-outline-primary rounded-pill" title="View">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                            <a href="{{ path('app_candidate_profile_edit', {'id': candidate_profile.id}) }}" class="btn btn-sm btn-outline-warning rounded-pill" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                        </td>
-                    </tr>
-                {% else %}
-                    <tr>
-                        <td colspan="6" class="text-center py-4">
-                            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-                            <p class="text-muted mb-0">No candidates found</p>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+                                {% endif %}
+                            </td>
+                            <td>{{ candidate_profile.createdAt ? candidate_profile.createdAt|date('M d, Y') : '-' }}</td>
+                            <td class="text-center">
+                                <div class="btn-group" role="group">
+                                    <a href="{{ path('app_candidate_profile_show', {'id': candidate_profile.id}) }}"
+                                       class="btn btn-sm btn-outline-primary rounded-pill" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+
+                                    {% if is_granted('ROLE_RECRUITER') %}
+                                        <a href="{{ path('app_candidate_profile_manage', {'id': candidate_profile.id}) }}"
+                                           class="btn btn-sm btn-outline-success rounded-pill" title="Manage / Reply">
+                                            <i class="fas fa-envelope-open-text"></i>
+                                        </a>
+                                    {% endif %}
+
+                                    <a href="{{ path('app_candidate_profile_edit', {'id': candidate_profile.id}) }}"
+                                       class="btn btn-sm btn-outline-warning rounded-pill" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4">
+                                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                <p class="text-muted mb-0">No candidates found</p>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-</div>
 {% endblock %}

@@ -1,0 +1,90 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Manage {{ candidate_profile.fullName }} - RH Pro Max{% endblock %}
+
+{% block header %}
+    <!-- Header Start -->
+    <div class="container-fluid bg-breadcrumb">
+        <div class="container text-center py-5" style="max-width: 900px;">
+            <h4 class="text-white display-4 mb-4 wow fadeInDown" data-wow-delay="0.1s">
+                Manage Candidate
+            </h4>
+            <ol class="breadcrumb d-flex justify-content-center mb-0 wow fadeInDown" data-wow-delay="0.3s">
+                <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_candidate_profile_index') }}">Candidates</a></li>
+                <li class="breadcrumb-item active text-primary">{{ candidate_profile.fullName }}</li>
+            </ol>
+        </div>
+    </div>
+    <!-- Header End -->
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid py-5">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-envelope-open-text me-2"></i>
+                                Manage application of {{ candidate_profile.fullName }}
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <p>
+                                <strong>Job offer:</strong>
+                                {% if candidate_profile.jobOffer %}
+                                    {{ candidate_profile.jobOffer.title }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </p>
+                            <p>
+                                <strong>Current status:</strong>
+                                {{ candidate_profile.status ? candidate_profile.status.value : 'N/A' }}
+                            </p>
+
+                            <hr>
+
+                            {{ form_start(form) }}
+                            <div class="mb-3">
+                                {{ form_label(form.status) }}
+                                {{ form_widget(form.status, {'attr': {'class': 'form-select'}}) }}
+                                {{ form_errors(form.status) }}
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form_label(form.interviewAt) }}
+                                {{ form_widget(form.interviewAt, {'attr': {'class': 'form-control'}}) }}
+                                <small class="text-muted">
+                                    Optional: set this only if you schedule an interview.
+                                </small>
+                                {{ form_errors(form.interviewAt) }}
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form_label(form.message) }}
+                                {{ form_widget(form.message, {'attr': {'class': 'form-control', 'rows': 5}}) }}
+                                <small class="text-muted">
+                                    Optional message that will be included in the email.
+                                </small>
+                                {{ form_errors(form.message) }}
+                            </div>
+
+                            <button type="submit" class="btn btn-success rounded-pill px-4">
+                                <i class="fas fa-paper-plane me-2"></i>
+                                Save and send email
+                            </button>
+                            <a href="{{ path('app_candidate_profile_show', {id: candidate_profile.id}) }}"
+                               class="btn btn-outline-secondary rounded-pill px-4 ms-2">
+                                Cancel
+                            </a>
+                            {{ form_end(form) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

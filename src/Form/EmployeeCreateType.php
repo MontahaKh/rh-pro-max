@@ -98,6 +98,7 @@ class EmployeeCreateType extends AbstractType
                 'choice_label' => fn(UserRole $role) => $role->value,
                 'placeholder' => 'Select a role',
             ])
+
             ->add('status', EnumType::class, [
                 'class' => UserStatus::class,
                 'label' => 'Status',

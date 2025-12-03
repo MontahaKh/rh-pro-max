@@ -22,20 +22,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $id = null;
 
+    // 👇 ICI : le rôle est un ENUM UserRole, PAS une string
+    #[ORM\Column(enumType: UserRole::class, nullable: true)]
+    private ?UserRole $role = null;
+
     #[ORM\Column(length: 180)]
     private ?string $email = null;
 
-    /**
-     * @var string The hashed password
-     */
     #[ORM\Column]
     private ?string $password = null;
 
     #[ORM\Column(enumType: UserStatus::class, nullable: true)]
     private ?UserStatus $status = null;
-
-    #[ORM\Column(enumType: UserRole::class, nullable: true)]
-    private ?UserRole $role = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $matricule = null;
@@ -87,38 +85,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setEmail(string $email): static
     {
         $this->email = $email;
-
         return $this;
     }
 
-    /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
-     */
     public function getUserIdentifier(): string
     {
         return (string) $this->email;
     }
 
-    /**
-     * @see UserInterface
-     */
-    public function getRoles(): array
+    public function getPassword(): ?string
     {
-        $roles = [];
-        if ($this->role) {
-            $roles[] = 'ROLE_' . $this->role->value;
-        }
-        // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
-
-        return array_unique($roles);
+        return $this->password;
     }
 
-    public function setRoles(array $roles): static
+    public function setPassword(string $password): static
     {
-        // This method is required by UserInterface but we use the role enum
+        $this->password = $password;
         return $this;
     }
 
@@ -130,19 +112,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setStatus(?UserStatus $status): static
     {
         $this->status = $status;
-
-        return $this;
-    }
-
-    public function getRole(): ?UserRole
-    {
-        return $this->role;
-    }
-
-    public function setRole(?UserRole $role): static
-    {
-        $this->role = $role;
-
         return $this;
     }
 
@@ -154,7 +123,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setMatricule(?string $matricule): static
     {
         $this->matricule = $matricule;
-
         return $this;
     }
 
@@ -166,7 +134,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setFirstName(?string $firstName): static
     {
         $this->firstName = $firstName;
-
         return $this;
     }
 
@@ -178,7 +145,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLastName(?string $lastName): static
     {
         $this->lastName = $lastName;
-
         return $this;
     }
 
@@ -190,7 +156,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setBirthday(?\DateTimeInterface $birthday): static
     {
         $this->birthday = $birthday;
-
         return $this;
     }
 
@@ -202,7 +167,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setHireDate(?\DateTimeInterface $hireDate): static
     {
         $this->hireDate = $hireDate;
-
         return $this;
     }
 
@@ -214,7 +178,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setDepartment(?string $department): static
     {
         $this->department = $department;
-
         return $this;
     }
 
@@ -226,8 +189,39 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setJobTitle(?string $jobTitle): static
     {
         $this->jobTitle = $jobTitle;
-
         return $this;
+    }
+
+    // 🚩🚩🚩 Très important : le type est bien ?UserRole
+    public function getRole(): ?UserRole
+    {
+        return $this->role;
+    }
+
+    public function setRole(?UserRole $role): self
+    {
+        $this->role = $role;
+        return $this;
+    }
+
+    // ✅ Rôles pour Symfony Security
+    public function getRoles(): array
+    {
+        $roles = [];
+
+        if ($this->role !== null) {
+            // enum → texte (ADMIN, HR_MANAGER, ...)
+            $roles[] = 'ROLE_' . $this->role->value;
+        }
+
+        // tout le monde a au moins ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    public function eraseCredentials(): void
+    {
     }
 
     /**
@@ -251,7 +245,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeSkill(EmployeeSkill $skill): static
     {
         if ($this->skills->removeElement($skill)) {
-            // set the owning side to null (unless already changed)
             if ($skill->getUser() === $this) {
                 $skill->setUser(null);
             }
@@ -268,22 +261,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->createdOffers;
     }
 
-    public function addCreatedOffer(JobOffer $createdOffer): static
+    public function addCreatedOffer(JobOffer $jobOffer): static
     {
-        if (!$this->createdOffers->contains($createdOffer)) {
-            $this->createdOffers->add($createdOffer);
-            $createdOffer->setCreator($this);
+        if (!$this->createdOffers->contains($jobOffer)) {
+            $this->createdOffers->add($jobOffer);
+            $jobOffer->setCreator($this);
         }
 
         return $this;
     }
 
-    public function removeCreatedOffer(JobOffer $createdOffer): static
+    public function removeCreatedOffer(JobOffer $jobOffer): static
     {
-        if ($this->createdOffers->removeElement($createdOffer)) {
-            // set the owning side to null (unless already changed)
-            if ($createdOffer->getCreator() === $this) {
-                $createdOffer->setCreator(null);
+        if ($this->createdOffers->removeElement($jobOffer)) {
+            if ($jobOffer->getCreator() === $this) {
+                $jobOffer->setCreator(null);
             }
         }
 
@@ -311,44 +303,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeCandidateProfile(CandidateProfile $candidateProfile): static
     {
         if ($this->candidateProfiles->removeElement($candidateProfile)) {
-            // set the owning side to null (unless already changed)
             if ($candidateProfile->getInternalApplicant() === $this) {
                 $candidateProfile->setInternalApplicant(null);
             }
         }
 
         return $this;
-    }
-
-    /**
-     * @see PasswordAuthenticatedUserInterface
-     */
-    public function getPassword(): ?string
-    {
-        return $this->password;
-    }
-
-    public function setPassword(string $password): static
-    {
-        $this->password = $password;
-
-        return $this;
-    }
-
-    /**
-     * Ensure the session doesn't contain actual password hashes by CRC32C-hashing them, as supported since Symfony 7.3.
-     */
-    public function __serialize(): array
-    {
-        $data = (array) $this;
-        $data["\0".self::class."\0password"] = hash('crc32c', $this->password);
-
-        return $data;
-    }
-
-    #[\Deprecated]
-    public function eraseCredentials(): void
-    {
-        // @deprecated, to be removed when upgrading to Symfony 8
     }
 }
