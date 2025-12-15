@@ -3,97 +3,160 @@
 {% block title %}{{ job_offer.title }} - Job Offer - RH Pro Max{% endblock %}
 
 {% block header %}
-<!-- Header Start -->
-<div class="container-fluid bg-breadcrumb">
-    <div class="container text-center py-5" style="max-width: 900px;">
-        <h4 class="text-white display-4 mb-4 wow fadeInDown" data-wow-delay="0.1s">Job Offer Details</h4>
-        <ol class="breadcrumb d-flex justify-content-center mb-0 wow fadeInDown" data-wow-delay="0.3s">
-            <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Home</a></li>
-            <li class="breadcrumb-item"><a href="{{ path('app_job_offer_index') }}">Job Offers</a></li>
-            <li class="breadcrumb-item active text-primary">{{ job_offer.title }}</li>
-        </ol>
+    <!-- Header Start -->
+    <div class="container-fluid bg-breadcrumb">
+        <div class="container text-center py-5" style="max-width: 900px;">
+            <h4 class="text-white display-4 mb-4 wow fadeInDown" data-wow-delay="0.1s">
+                Job Offer Details
+            </h4>
+            <ol class="breadcrumb d-flex justify-content-center mb-0 wow fadeInDown" data-wow-delay="0.3s">
+                <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_job_offer_index') }}">Job Offers</a></li>
+                <li class="breadcrumb-item active text-primary">{{ job_offer.title }}</li>
+            </ol>
+        </div>
     </div>
-</div>
-<!-- Header End -->
+    <!-- Header End -->
 {% endblock %}
 
 {% block body %}
-<div class="container-fluid py-5">
-    <div class="container py-5">
-        <div class="row">
-            <div class="col-lg-8">
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0"><i class="fas fa-briefcase me-2"></i>{{ job_offer.title }}</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="mb-4">
-                            <span class="badge bg-{{ job_offer.status.value == 'OPEN' ? 'success' : (job_offer.status.value == 'CLOSED' ? 'secondary' : 'warning') }} me-2">
-                                {{ job_offer.status ? job_offer.status.value : '' }}
+    <div class="container-fluid py-5">
+        <div class="container py-5">
+            <div class="row">
+
+                <!-- LEFT : Job Offer Info -->
+                <div class="col-lg-8">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-briefcase me-2"></i>{{ job_offer.title }}
+                            </h5>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="mb-4">
+                            <span class="badge
+                                bg-{{ job_offer.status.value == 'OPEN'
+                            ? 'success'
+                            : (job_offer.status.value == 'CLOSED'
+                            ? 'secondary'
+                            : 'warning')
+                            }} me-2">
+                                {{ job_offer.status.value }}
                             </span>
-                            <span class="text-muted"><i class="fas fa-map-marker-alt me-1"></i>{{ job_offer.location }}</span>
-                        </div>
-                        <h6 class="text-primary">Description</h6>
-                        <p>{{ job_offer.description }}</p>
-                        <hr>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <p class="mb-1"><strong><i class="fas fa-calendar-plus me-2 text-muted"></i>Created:</strong></p>
-                                <p>{{ job_offer.createdAt ? job_offer.createdAt|date('M d, Y') : '-' }}</p>
+
+                                <span class="text-muted">
+                                <i class="fas fa-map-marker-alt me-1"></i>{{ job_offer.location }}
+                            </span>
                             </div>
-                            <div class="col-md-6">
-                                <p class="mb-1"><strong><i class="fas fa-calendar-times me-2 text-muted"></i>Closing Date:</strong></p>
-                                <p>{{ job_offer.closingDate ? job_offer.closingDate|date('M d, Y') : '-' }}</p>
+
+                            <h6 class="text-primary">Description</h6>
+                            <p>{{ job_offer.description }}</p>
+
+                            <hr>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="mb-1">
+                                        <strong>
+                                            <i class="fas fa-calendar-plus me-2 text-muted"></i>Created:
+                                        </strong>
+                                    </p>
+                                    <p>{{ job_offer.createdAt ? job_offer.createdAt|date('M d, Y') : '-' }}</p>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <p class="mb-1">
+                                        <strong>
+                                            <i class="fas fa-calendar-times me-2 text-muted"></i>Closing Date:
+                                        </strong>
+                                    </p>
+                                    <p>{{ job_offer.closingDate ? job_offer.closingDate|date('M d, Y') : '-' }}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-4">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-light">
-                        <h6 class="mb-0"><i class="fas fa-cog me-2"></i>Actions</h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-grid gap-2">
-                            {% if is_granted('ROLE_CANDIDATE') and job_offer.status.value == 'OPEN' %}
-                                {% if has_applied %}
-                                    <button class="btn btn-secondary rounded-pill" disabled>
-                                        <i class="fas fa-check-circle me-2"></i>Already Applied
-                                    </button>
-                                    <a href="{{ path('app_candidate_dashboard') }}" class="btn btn-info rounded-pill">
-                                        <i class="fas fa-eye me-2"></i>View My Application
-                                    </a>
-                                {% else %}
-                                    <form method="post" action="{{ path('app_job_offer_apply', {'id': job_offer.id}) }}">
-                                        <input type="hidden" name="_token" value="{{ csrf_token('apply' ~ job_offer.id) }}">
-                                        <button type="submit" class="btn btn-success rounded-pill w-100">
-                                            <i class="fas fa-paper-plane me-2"></i>Apply Now
+
+                <!-- RIGHT : Actions -->
+                <div class="col-lg-4">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">
+                                <i class="fas fa-cog me-2"></i>Actions
+                            </h6>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+
+                                {# ===================== CANDIDATE APPLY ===================== #}
+                                {% if is_granted('ROLE_CANDIDATE') and job_offer.status.value == 'OPEN' %}
+                                    {% if has_applied %}
+                                        <button class="btn btn-secondary rounded-pill" disabled>
+                                            <i class="fas fa-check-circle me-2"></i>Already Applied
                                         </button>
-                                    </form>
+                                        <a href="{{ path('app_candidate_dashboard') }}" class="btn btn-info rounded-pill">
+                                            <i class="fas fa-eye me-2"></i>View My Application
+                                        </a>
+                                    {% else %}
+                                        <form method="post" action="{{ path('app_job_offer_apply', {'id': job_offer.id}) }}">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('apply' ~ job_offer.id) }}">
+                                            <button type="submit" class="btn btn-success rounded-pill w-100">
+                                                <i class="fas fa-paper-plane me-2"></i>Apply Now
+                                            </button>
+                                        </form>
+                                    {% endif %}
+
+                                    {# ===================== EMPLOYEE INTERNAL APPLY ===================== #}
+                                {% elseif is_granted('ROLE_EMPLOYEE') and job_offer.status.value == 'OPEN' %}
+                                    {% if has_applied %}
+                                        <button class="btn btn-secondary rounded-pill" disabled>
+                                            <i class="fas fa-check-circle me-2"></i>Already Applied (Internal)
+                                        </button>
+                                    {% else %}
+                                        <form method="post" action="{{ path('app_job_offer_apply_internal', {'id': job_offer.id}) }}">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('apply_internal' ~ job_offer.id) }}">
+                                            <button type="submit" class="btn btn-success rounded-pill w-100">
+                                                <i class="fas fa-paper-plane me-2"></i>Apply as Employee
+                                            </button>
+                                        </form>
+                                    {% endif %}
+
+                                    {# ===================== NOT LOGGED IN ===================== #}
+                                {% elseif not app.user and job_offer.status.value == 'OPEN' %}
+                                    <a href="{{ path('app_login') }}" class="btn btn-success rounded-pill">
+                                        <i class="fas fa-sign-in-alt me-2"></i>Login to Apply
+                                    </a>
+
+                                    {# ===================== JOB CLOSED ===================== #}
+                                {% else %}
+                                    <button class="btn btn-outline-secondary rounded-pill" disabled>
+                                        <i class="fas fa-lock me-2"></i>Applications Closed
+                                    </button>
                                 {% endif %}
-                            {% elseif not app.user and job_offer.status.value == 'OPEN' %}
-                                <a href="{{ path('app_login') }}" class="btn btn-success rounded-pill">
-                                    <i class="fas fa-sign-in-alt me-2"></i>Login to Apply
+
+                                {# ===================== HR ACTIONS ===================== #}
+                                {% if is_granted('ROLE_HR_MANAGER') %}
+                                    <a href="{{ path('app_job_offer_edit', {'id': job_offer.id}) }}" class="btn btn-warning rounded-pill">
+                                        <i class="fas fa-edit me-2"></i>Edit Job Offer
+                                    </a>
+                                {% endif %}
+
+                                <a href="{{ path('app_job_offer_index') }}" class="btn btn-outline-primary rounded-pill">
+                                    <i class="fas fa-arrow-left me-2"></i>Back to List
                                 </a>
-                            {% endif %}
-                            {% if is_granted('ROLE_HR_MANAGER') %}
-                            <a href="{{ path('app_job_offer_edit', {'id': job_offer.id}) }}" class="btn btn-warning rounded-pill">
-                                <i class="fas fa-edit me-2"></i>Edit Job Offer
-                            </a>
-                            {% endif %}
-                            <a href="{{ path('app_job_offer_index') }}" class="btn btn-outline-primary rounded-pill">
-                                <i class="fas fa-arrow-left me-2"></i>Back to List
-                            </a>
+
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <hr>
+                                    {{ include('job_offer/_delete_form.html.twig') }}
+                                {% endif %}
+                            </div>
                         </div>
-                        {% if is_granted('ROLE_ADMIN') %}
-                        <hr>
-                        {{ include('job_offer/_delete_form.html.twig') }}
-                        {% endif %}
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
-</div>
 {% endblock %}

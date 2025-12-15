@@ -220,6 +220,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return array_unique($roles);
     }
 
+
+    // qque modif
+    public function getRoleLabel(): string
+    {
+        return $this->role?->value ?? '';
+    }
+
+    public function getStatusLabel(): string
+    {
+        return $this->status?->value ?? '';
+    }
+
+
     public function eraseCredentials(): void
     {
     }

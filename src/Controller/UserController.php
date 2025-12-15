@@ -28,32 +28,37 @@ class UserController extends AbstractController
 
     #[Route('/new', name: 'app_user_new', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_HR_MANAGER')]
-    public function new(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
-    {
-        // Only Admin and HR Manager can create employee accounts
-        $this->denyAccessUnlessGranted('ROLE_HR_MANAGER', null, 'Only Admin and HR Managers can create employee accounts.');
 
+    public function new(Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $hasher): Response
+    {
         $user = new User();
-        $form = $this->createForm(EmployeeCreateType::class, $user);
+
+        $form = $this->createForm(UserType::class, $user, [
+            'is_create' => true,
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Hash the password
-            $plainPassword = $form->get('plainPassword')->getData();
-            $hashedPassword = $passwordHasher->hashPassword($user, $plainPassword);
-            $user->setPassword($hashedPassword);
 
-            $entityManager->persist($user);
-            $entityManager->flush();
+            $plainPassword = $form->get('password')->getData();
+            if (!$plainPassword) {
+                $this->addFlash('danger', 'Password is required.');
+                return $this->render('user/new.html.twig', [
+                    'form' => $form->createView(),
+                ]);
+            }
 
-            $this->addFlash('success', 'Employee account created successfully!');
+            $user->setPassword($hasher->hashPassword($user, $plainPassword));
 
-            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+            $em->persist($user);
+            $em->flush();
+
+            $this->addFlash('success', 'Employee created successfully!');
+            return $this->redirectToRoute('app_user_index');
         }
 
         return $this->render('user/new.html.twig', [
-            'user' => $user,
-            'form' => $form,
+            'form' => $form->createView(),
         ]);
     }
 
@@ -63,33 +68,6 @@ class UserController extends AbstractController
     {
         return $this->render('user/show.html.twig', [
             'user' => $user,
-        ]);
-    }
-
-    #[Route('/{id}/edit', name: 'app_user_edit', methods: ['GET', 'POST'])]
-    #[IsGranted('ROLE_USER')]
-    public function edit(Request $request, User $user, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
-    {
-        // Users can edit their own profile, Admin/HR can edit anyone
-        $currentUser = $this->getUser();
-        if ($currentUser->getId() !== $user->getId() && !$this->isGranted('ROLE_HR_MANAGER')) {
-            throw $this->createAccessDeniedException('You can only edit your own profile.');
-        }
-
-        $form = $this->createForm(UserType::class, $user);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Profile updated successfully!');
-
-            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('user/edit.html.twig', [
-            'user' => $user,
-            'form' => $form,
         ]);
     }
 
@@ -105,4 +83,33 @@ class UserController extends AbstractController
 
         return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    #[Route('/{id}/edit', name: 'app_user_edit', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_USER')]
+    public function edit(Request $request, User $user, EntityManagerInterface $em, UserPasswordHasherInterface $hasher): Response
+    {
+        $form = $this->createForm(UserType::class, $user, [
+            'is_create' => false,
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $plainPassword = $form->get('password')->getData();
+            if ($plainPassword) {
+                $user->setPassword($hasher->hashPassword($user, $plainPassword));
+            }
+
+            $em->flush();
+
+            $this->addFlash('success', 'Employee updated successfully!');
+            return $this->redirectToRoute('app_user_index');
+        }
+
+        return $this->render('user/edit.html.twig', [
+            'form' => $form->createView(),
+            'user' => $user,
+        ]);
+    }
+
 }

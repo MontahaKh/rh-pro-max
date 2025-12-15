@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+{% block title %}HR Dashboard{% endblock %}
+{% block page_title %}HR Dashboard{% endblock %}
+
+{% block body %}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="mb-0">Manage Job Offers</h4>
+        <a class="btn btn-primary" href="{{ path('app_job_offer_new') }}">+ New Offer</a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Title</th><th>Status</th><th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for offer in job_offers %}
+                    <tr>
+                        <td>{{ offer.title }}</td>
+                        <td>{{ offer.status.value }}</td>
+                        <td>
+                            <a class="btn btn-sm btn-outline-primary" href="{{ path('app_job_offer_show', {id: offer.id}) }}">View</a>
+                            <a class="btn btn-sm btn-outline-warning" href="{{ path('app_job_offer_edit', {id: offer.id}) }}">Edit</a>
+
+                            {# ✅ plus tard: bouton "View Applications by offer" #}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="3" class="text-muted">No offers found.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

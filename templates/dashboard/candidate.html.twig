@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+{% block title %}Candidate Dashboard{% endblock %}
+{% block page_title %}Candidate Dashboard{% endblock %}
+
+{% block body %}
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm p-3">
+                <h5>My Profile</h5>
+                <a class="btn btn-outline-primary" href="{{ path('app_candidate_profile_index') }}">Profile</a>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm p-3">
+                <h5>My CV</h5>
+                <a class="btn btn-outline-primary" href="{{ path('app_candidate_cv') }}">CV</a>
+            </div>
+        </div>
+    </div>
+
+    <hr class="my-4">
+
+    <h5>My Applications</h5>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <ul class="mb-0">
+                {% for appItem in applications %}
+                    <li>{{ appItem.jobOffer.title }} — {{ appItem.status.value }}</li>
+                {% else %}
+                    <li class="text-muted">No applications yet.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}

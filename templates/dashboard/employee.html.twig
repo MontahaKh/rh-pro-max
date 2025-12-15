@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+{% block title %}Employee Dashboard{% endblock %}
+{% block page_title %}Employee Dashboard{% endblock %}
+
+{% block body %}
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm p-3">
+                <h5>My Profile</h5>
+                <a class="btn btn-outline-primary" href="{{ path('app_user_show', {id: app.user.id}) }}">Open Profile</a>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm p-3">
+                <h5>My Skills</h5>
+                <a class="btn btn-outline-primary" href="{{ path('app_skill_index') }}">Manage Skills</a>
+            </div>
+        </div>
+    </div>
+
+    <hr class="my-4">
+
+    <h5>My Internal Applications</h5>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <ul class="mb-0">
+                {% for appItem in internal_apps %}
+                    <li>{{ appItem.jobOffer.title }} — {{ appItem.status.value }}</li>
+                {% else %}
+                    <li class="text-muted">No internal applications yet.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}
